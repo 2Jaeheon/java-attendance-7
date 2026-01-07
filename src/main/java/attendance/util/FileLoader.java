@@ -43,7 +43,7 @@ public class FileLoader {
         }
 
         LocalDate current = START_DATE;
-        while (!current.isAfter(endDate)) {
+        while (!current.isAfter(endDate.minusDays(1))) {
 
             if (isDayOff(current)) {
                 current = current.plusDays(1);

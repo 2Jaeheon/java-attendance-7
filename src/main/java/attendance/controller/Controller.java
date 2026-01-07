@@ -1,6 +1,7 @@
 package attendance.controller;
 
 import attendance.domain.AttendanceBook;
+import attendance.domain.Crew;
 import attendance.util.FileLoader;
 import attendance.util.Parser;
 import attendance.view.InputView;
@@ -8,6 +9,7 @@ import attendance.view.Outputview;
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
@@ -39,7 +41,7 @@ public class Controller {
 
     private void processCommand(int cmd, LocalDateTime now) {
         if (cmd == 1) {
-            processAttend();
+            processAttend(now);
         }
         if (cmd == 2) {
             processFixAttendance();
@@ -50,8 +52,9 @@ public class Controller {
         if (cmd == 4) {
             processExpulsionCheck();
         }
-
-        throw new IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.");
+        if (cmd != 1 && cmd != 2 && cmd != 3 && cmd != 4) {
+            throw new IllegalArgumentException("[ERROR] 잘못된 형식을 입력하였습니다.");
+        }
     }
 
     private void processExpulsionCheck() {
@@ -66,8 +69,12 @@ public class Controller {
 
     }
 
-    private void processAttend() {
-
+    private void processAttend(LocalDateTime now) {
+        String nickname = inputView.readNickname();
+        Crew crew = attendanceBook.getCrew(nickname);
+        LocalTime attendTime = parser.parseTime(inputView.readAttendTime());
+        attendanceBook.attend(crew, now, attendTime);
+        outputview.printAttendResult(now, attendTime);
     }
 
     private LocalDateTime getNowDate() {
