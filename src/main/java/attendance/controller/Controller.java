@@ -4,6 +4,7 @@ import attendance.domain.Attendance;
 import attendance.domain.AttendanceBook;
 import attendance.domain.AttendanceStatus;
 import attendance.domain.Crew;
+import attendance.domain.WeedingRiskCrew;
 import attendance.util.FileLoader;
 import attendance.util.Parser;
 import attendance.view.InputView;
@@ -63,7 +64,8 @@ public class Controller {
     }
 
     private void processExpulsionCheck() {
-
+        WeedingRiskCrew weedingRiskCrew = attendanceBook.findWeedingRiskCrew();
+        outputview.printWeedingCrews(weedingRiskCrew);
     }
 
     private void processAttendanceHistory() {

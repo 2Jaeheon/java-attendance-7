@@ -4,6 +4,7 @@ import attendance.domain.Attendance;
 import attendance.domain.AttendanceStatus;
 import attendance.domain.Calendar;
 import attendance.domain.Crew;
+import attendance.domain.WeedingRiskCrew;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -94,6 +95,26 @@ public class Outputview {
             System.out.println(status.getDescription() + ": " + count + "회");
         }
 
-        System.out.println(crewInfo);
+        System.out.println(crewInfo + " 대상자");
+    }
+
+    public void printWeedingCrews(WeedingRiskCrew weedingRiskCrew) {
+        Map<Crew, Map<AttendanceStatus, Integer>> crewMap = weedingRiskCrew.riskBook();
+
+        System.out.println("제적 위험자 조회 결과");
+        int i = 0;
+        for (Map.Entry<Crew, Map<AttendanceStatus, Integer>> crews : crewMap.entrySet()) {
+            Crew crew = crews.getKey();
+            Map<AttendanceStatus, Integer> attendanceMap = crews.getValue();
+
+            int absentCount = attendanceMap.get(AttendanceStatus.ABSENT);
+            int tardyCount = attendanceMap.get(AttendanceStatus.TARDY);
+
+            System.out.println(
+                    "- " + crew.name() + ": " + AttendanceStatus.ABSENT.getDescription() + " " + absentCount + ", "
+                            + AttendanceStatus.TARDY.getDescription() + " " + tardyCount + "회 ("
+                            + "구현 필요" + ")");
+        }
+
     }
 }

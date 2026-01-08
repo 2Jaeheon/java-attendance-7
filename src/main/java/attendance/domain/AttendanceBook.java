@@ -99,17 +99,35 @@ public class AttendanceBook {
         int absentCount = attendanceStatusMap.get(AttendanceStatus.ABSENT);
 
         if (absentCount > 5) {
-            return "경고 대상자";
+            return "경고";
         }
 
         if (absentCount >= 3) {
-            return "면담 대상자";
+            return "면담";
         }
 
         if (absentCount >= 2) {
-            return "경고 대상자";
+            return "경고";
         }
 
         return "";
+    }
+
+
+    public WeedingRiskCrew findWeedingRiskCrew() {
+        Map<Crew, Map<AttendanceStatus, Integer>> weedingCrews = new LinkedHashMap<>();
+        for (Crew crew : book.keySet()) {
+            weedingCrews.put(crew, new LinkedHashMap<>());
+        }
+
+        int i = 0;
+        for (Map.Entry<Crew, List<Attendance>> entry : book.entrySet()) {
+            Crew crew = entry.getKey();
+
+            Map<AttendanceStatus, Integer> attendanceStatusIntegerMap = calculateStatistics(crew);
+            weedingCrews.put(crew, attendanceStatusIntegerMap);
+        }
+
+        return new WeedingRiskCrew(weedingCrews);
     }
 }
