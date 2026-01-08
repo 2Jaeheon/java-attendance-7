@@ -1,6 +1,8 @@
 package attendance.controller;
 
+import attendance.domain.Attendance;
 import attendance.domain.AttendanceBook;
+import attendance.domain.AttendanceStatus;
 import attendance.domain.Crew;
 import attendance.util.FileLoader;
 import attendance.util.Parser;
@@ -8,10 +10,13 @@ import attendance.view.InputView;
 import attendance.view.Outputview;
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class Controller {
     InputView inputView = new InputView();
@@ -44,7 +49,7 @@ public class Controller {
             processAttend(now);
         }
         if (cmd == 2) {
-            processFixAttendance();
+            processFixAttendance(now);
         }
         if (cmd == 3) {
             processAttendanceHistory();
@@ -62,11 +67,23 @@ public class Controller {
     }
 
     private void processAttendanceHistory() {
-
+        String nickname = inputView.readNickname();
+        Crew crew = attendanceBook.getCrew(nickname);
+        List<Attendance> attendances = attendanceBook.findAll(crew);
+        Map<AttendanceStatus, Integer> attendanceStatusMap = attendanceBook.calculateStatistics(crew);
+        String crewInfo = attendanceBook.calculateCrewInfo(attendanceStatusMap);
+        outputview.printCrewAttendances
+                (crew, attendances, attendanceStatusMap, crewInfo);
     }
 
-    private void processFixAttendance() {
-
+    private void processFixAttendance(LocalDateTime now) {
+        String nickname = inputView.readFixNickname();
+        Crew crew = attendanceBook.getCrew(nickname);
+        LocalDate changeDate = parser.paserDate(inputView.readChangeDate());
+        LocalTime changeTime = parser.parseTime(inputView.readChangeTime());
+        Attendance beforeAttendance = attendanceBook.getBeforeAttendance(crew, changeDate);
+        Attendance newAttendance = attendanceBook.change(crew, now, changeDate, changeTime);
+        outputview.printChangeCompleteMessage(beforeAttendance, newAttendance);
     }
 
     private void processAttend(LocalDateTime now) {
